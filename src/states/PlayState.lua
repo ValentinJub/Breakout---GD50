@@ -29,6 +29,8 @@ function PlayState:enter(params)
     self.ball = params.ball
     self.level = params.level
 
+    self.combo = 0
+
     self.recoverPoints = 5000
 
     -- give ball random starting velocity
@@ -54,7 +56,7 @@ function PlayState:update(dt)
     self.paddle:update(dt)
     self.ball:update(dt)
 
-    if self.ball:collides(self.paddle) then
+    if self.ball:collides(self.paddle, "paddle") then
         -- raise ball above paddle in case it goes below it, then reverse dy
         self.ball.y = self.paddle.y - 8
         self.ball.dy = -self.ball.dy
@@ -79,7 +81,10 @@ function PlayState:update(dt)
     for k, brick in pairs(self.bricks) do
 
         -- only check collision if we're in play
-        if brick.inPlay and self.ball:collides(brick) then
+        if brick.inPlay and self.ball:collides(brick, "brick") then
+
+            -- add to combo
+            self.combo = self.combo + 1
 
             -- add to score
             self.score = self.score + (brick.tier * 200 + brick.color * 25)
@@ -169,6 +174,8 @@ function PlayState:update(dt)
         self.health = self.health - 1
         gSounds['hurt']:play()
 
+        self.combo = 0
+
         if self.health == 0 then
             gStateMachine:change('game-over', {
                 score = self.score,
@@ -206,6 +213,16 @@ function PlayState:render()
     -- render all particle systems
     for k, brick in pairs(self.bricks) do
         brick:renderParticles()
+    end
+
+    -- render combo
+    if self.combo > 0 then
+        love.graphics.setFont(gFonts['small'])
+        love.graphics.printf("Combo x" .. self.combo
+            ,0
+            ,VIRTUAL_HEIGHT - 12
+            ,VIRTUAL_WIDTH - 5
+            ,'right')
     end
 
     self.paddle:render()
