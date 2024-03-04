@@ -125,3 +125,27 @@ function GenerateQuadsBalls(atlas)
 
     return quads
 end
+
+-- first 4 items y192 4*16
+-- key y192 x144 1*16
+
+function GenerateQuadBonus(atlas)
+    local x = 0
+    local y = 192
+
+    local counter = 1
+    local quads = {}
+
+    -- grab the first four items on the bonus row
+    for i = 0, 3 do
+        quads[counter] = love.graphics.newQuad(x, y, 16, 16, atlas:getDimensions())
+        x = x + 16
+        counter = counter + 1
+    end
+
+    -- grab the key
+    x = 144
+    quads[counter] = love.graphics.newQuad(x, y, 16, 16, atlas:getDimensions())
+
+    return quads
+end

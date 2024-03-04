@@ -14,4 +14,5 @@ Project #3 from: https://cs50.harvard.edu/games/2018/projects/2/breakout/
 
 ![alt text](image.png)
 
-- Modified the ball collision / to be improved
+- Modified the ball collision:
+    - The ball now doesn't bounce off the paddle if the center of the ball is below the center of the paddle.   

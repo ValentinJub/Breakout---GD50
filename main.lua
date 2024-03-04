@@ -66,7 +66,8 @@ function love.load()
         ['paddles'] = GenerateQuadsPaddles(gTextures['main']),
         ['balls'] = GenerateQuadsBalls(gTextures['main']),
         ['bricks'] = GenerateQuadsBricks(gTextures['main']),
-        ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9)
+        ['hearts'] = GenerateQuads(gTextures['hearts'], 10, 9),
+        ['bonus'] = GenerateQuadBonus(gTextures['main'])
     }
     
     -- initialize our virtual resolution, which will be rendered within our
@@ -108,6 +109,7 @@ function love.load()
     -- 4. 'play' (the ball is in play, bouncing between paddles)
     -- 5. 'victory' (the current level is over, with a victory jingle)
     -- 6. 'game-over' (the player has lost; display score and allow restart)
+    -- 7. 'debug' (for various testing purposes)
     gStateMachine = StateMachine {
         ['start'] = function() return StartState() end,
         ['play'] = function() return PlayState() end,
@@ -116,7 +118,8 @@ function love.load()
         ['victory'] = function() return VictoryState() end,
         ['high-scores'] = function() return HighScoreState() end,
         ['enter-high-score'] = function() return EnterHighScoreState() end,
-        ['paddle-select'] = function() return PaddleSelectState() end
+        ['paddle-select'] = function() return PaddleSelectState() end,
+        ['debug'] = function() return DebugState() end
     }
     gStateMachine:change('start', {
         highScores = loadHighScores()

@@ -46,6 +46,11 @@ function StartState:update(dt)
         end
     end
 
+    -- enter debug mode
+    if love.keyboard.wasPressed('d') then
+        gStateMachine:change('debug', {})
+    end
+
     -- we no longer have this globally, so include here
     if love.keyboard.wasPressed('escape') then
         love.event.quit()
