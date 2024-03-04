@@ -17,8 +17,18 @@ Project #3 from: https://cs50.harvard.edu/games/2018/projects/2/breakout/
 - Modified the ball collision:
     - The ball now doesn't bounce off the paddle if the center of the ball is below the center of the paddle.   
 
-![alt text](image-1.png) Will shrink the paddle
-![alt text](image-2.png) Will increase the paddle size
-![alt text](image-3.png) Will give a heart
-![alt text](image-4.png) Will add two additional balls
-![alt text](image-5.png) Will give the player a key
+
+### shrink the paddle
+![alt text](image-1.png)
+
+### increase the paddle size
+![alt text](image-2.png) 
+
+### give a heart
+![alt text](image-3.png) 
+
+### add two additional balls
+![alt text](image-4.png) 
+
+### give the player a key
+![alt text](image-5.png) 
