@@ -11,6 +11,7 @@ DebugState = Class{__includes = BaseState}
 
 function DebugState:enter(params)
     -- self.highScores = params.highScores
+    self.items = {}
 end
 
 function DebugState:update(dt)
@@ -21,25 +22,63 @@ function DebugState:update(dt)
             highScores = self.highScores
         })
     end
+
+    -- spawn a bonus depending on the key pressed
+    if love.keyboard.wasPressed('q') then
+       table.insert(self.items, Bonus(BONUS_TYPE['paddleShrink']))
+       --
+    elseif love.keyboard.wasPressed('w') then
+       table.insert(self.items, Bonus(BONUS_TYPE['paddleGrow']))
+       -- 
+    elseif love.keyboard.wasPressed('e') then
+       table.insert(self.items, Bonus(BONUS_TYPE['heart']))
+       -- 
+    elseif love.keyboard.wasPressed('r') then
+       table.insert(self.items, Bonus(BONUS_TYPE['moreBalls']))
+       -- 
+    elseif love.keyboard.wasPressed('t') then
+       table.insert(self.items, Bonus(BONUS_TYPE['key']))
+       -- 
+    end
+
+    for k, item in pairs(self.items) do
+        if item.active then
+            item:update(dt)
+        end
+    end
+
+    for k, item in pairs(self.items) do
+        if not item.active then
+            table.remove(self.items, k)
+        end
+    end
 end
 
 function DebugState:render()
     love.graphics.setFont(gFonts['large'])
     love.graphics.printf('Debug Screen, do you belong here?', 0, 20, VIRTUAL_WIDTH, 'center')
 
-    local function renderBonus()
+    local function testItemSprite()
         local totalWidth = 16 * 5
-        local x = (VIRTUAL_WIDTH / 2) - (totalWidth / 2) - 16
+        local x = (VIRTUAL_WIDTH / 2) - (totalWidth / 2)
         local y = (VIRTUAL_HEIGHT / 2) - (16 / 2)
         for i = 1, 5 do
             love.graphics.draw(
                 gTextures['main'] -- texture
                 ,gFrames['bonus'][i] -- quad
-                ,x 
+                ,x
                 ,y
             )
+            x = x + 16
         end
     end
 
-    renderBonus()
+    local function renderItems()
+        for k, item in pairs(self.items) do
+            item:render()
+        end
+    end
+
+    testItemSprite()
+    renderItems()
 end

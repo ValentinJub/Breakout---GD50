@@ -20,3 +20,11 @@ VIRTUAL_HEIGHT = 243
 
 -- paddle movement speed
 PADDLE_SPEED = 200
+
+BONUS_TYPE = {
+    ['paddleShrink'] = 1,
+    ['paddleGrow'] = 2,
+    ['heart'] = 3,
+    ['moreBalls'] = 4,
+    ['key'] = 5
+}
