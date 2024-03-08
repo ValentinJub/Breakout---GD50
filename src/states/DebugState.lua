@@ -41,12 +41,14 @@ function DebugState:update(dt)
        -- 
     end
 
+    -- update active items
     for k, item in pairs(self.items) do
         if item.active then
             item:update(dt)
         end
     end
 
+    -- remove inactive items
     for k, item in pairs(self.items) do
         if not item.active then
             table.remove(self.items, k)

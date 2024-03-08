@@ -8,16 +8,21 @@ Project #3 from: https://cs50.harvard.edu/games/2018/projects/2/breakout/
 - Grow and shrink the Paddle when the player gains enough points or loses a life.
 - Add a locked Brick that will only open when the player collects a second new powerup, a key, which should only spawn when such a Brick exists and randomly as per the Ball powerup.
 
+# Todo
+### Make sure all actions have a SF
+### Make sure all actions award score
+### Add a global speed factor that scales with combo, attached to paddle & ball velocity
+### Add balls colliding with each other
+
 # My additions
 
-- Added a Combo counter
-
+## Added a Combo counter
 ![alt text](image.png)
   
 - Modified the ball collision:
     - The ball now doesn't bounce off the paddle if the center of the ball is below the center of the paddle.   
 
-# The bonus will:
+# Added all the bonuses below
 
 ### shrink the paddle
 ![alt text](image-1.png)

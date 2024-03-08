@@ -13,15 +13,30 @@
     which the player gets to choose upon starting the game.
 ]]
 
+local function setPaddleWidth(size)
+    if size == 1 then
+        return 32
+    elseif size == 2 then
+        return 64
+    elseif size == 3 then
+        return 96
+    elseif size == 4 then
+        return 128
+    else 
+        return 64
+    end
+end
+
 Paddle = Class{}
 
 --[[
     Our Paddle will initialize at the same spot every time, in the middle
     of the world horizontally, toward the bottom.
 ]]
-function Paddle:init(skin)
-    -- x is placed in the middle
-    self.x = VIRTUAL_WIDTH / 2 - 32
+function Paddle:init(params)
+
+    -- x is placed in the middle unless we provide a o
+    self.x = params.x and params.x or VIRTUAL_WIDTH / 2 - 32
 
     -- y is placed a little above the bottom edge of the screen
     self.y = VIRTUAL_HEIGHT - 32
@@ -29,17 +44,18 @@ function Paddle:init(skin)
     -- start us off with no velocity
     self.dx = 0
 
+    -- the variant is which of the four paddle sizes we currently are; 'medium'
+    -- is the starting size, as the smallest is too tough to start with
+    self.size = params.size
+
     -- starting dimensions
-    self.width = 64
+    self.width = setPaddleWidth(self.size)
     self.height = 16
 
     -- the skin only has the effect of changing our color, used to offset us
     -- into the gPaddleSkins table later
-    self.skin = skin
+    self.skin = params.skin
 
-    -- the variant is which of the four paddle sizes we currently are; 2
-    -- is the starting size, as the smallest is too tough to start with
-    self.size = 2
 end
 
 function Paddle:update(dt)
@@ -72,6 +88,6 @@ end
     that corresponds to the proper skin and size.
 ]]
 function Paddle:render()
-    love.graphics.draw(gTextures['main'], gFrames['paddles'][self.size + 4 * (self.skin - 1)],
+    love.graphics.draw(gTextures['main'], gFrames['paddles'][self.size][self.skin],
         self.x, self.y)
 end

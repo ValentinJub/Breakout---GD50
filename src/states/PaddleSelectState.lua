@@ -46,13 +46,15 @@ function PaddleSelectState:update(dt)
         gSounds['confirm']:play()
 
         gStateMachine:change('serve', {
-            paddle = Paddle(self.currentPaddle),
+            paddle = Paddle({
+                skin = self.currentPaddle,
+                size = 2
+            }),
             bricks = LevelMaker.createMap(1),
             health = 3,
             score = 0,
             highScores = self.highScores,
             level = 1,
-            recoverPoints = 5000
         })
     end
 
@@ -97,6 +99,6 @@ function PaddleSelectState:render()
     love.graphics.setColor(1, 1, 1, 1)
 
     -- draw the paddle itself, based on which we have selected
-    love.graphics.draw(gTextures['main'], gFrames['paddles'][2 + 4 * (self.currentPaddle - 1)],
+    love.graphics.draw(gTextures['main'], gFrames['paddles'][2][self.currentPaddle],
         VIRTUAL_WIDTH / 2 - 32, VIRTUAL_HEIGHT - VIRTUAL_HEIGHT / 3)
 end
