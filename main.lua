@@ -95,6 +95,10 @@ function love.load()
         ['high-score'] = love.audio.newSource('sounds/high_score.wav', 'static'),
         ['pause'] = love.audio.newSource('sounds/pause.wav', 'static'),
         ['powerup'] = love.audio.newSource('sounds/powerup.wav', 'static'),
+        ['paddlegrow'] = love.audio.newSource('sounds/paddlegrow.wav', 'static'),
+        ['paddleshrink'] = love.audio.newSource('sounds/paddleshrink.wav', 'static'),
+        ['moreballs'] = love.audio.newSource('sounds/moreballs.wav', 'static'),
+        ['key'] = love.audio.newSource('sounds/key.wav', 'static'),
 
         ['music'] = love.audio.newSource('sounds/music.wav', 'static')
     }

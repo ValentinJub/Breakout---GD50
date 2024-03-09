@@ -160,19 +160,25 @@ function PlayState:update(dt)
         if type == BONUS_TYPE['heart'] then
             self.health = math.min(3, self.health + 1)
             gSounds['powerup']:play()
+            self.score = self.score + 100
         elseif type == BONUS_TYPE['paddleShrink'] then
             self.paddle = Paddle({
                 size = math.max(size - 1, 1),
                 skin = skin,
                 x = paddleX
             })
+            gSounds['paddleshrink']:play()
+            self.score = self.score + 500
         elseif type == BONUS_TYPE['paddleGrow'] then 
             self.paddle = Paddle({
                 size = math.min(size + 1, 4),
                 skin = skin,
                 x = paddleX
             })
+            gSounds['paddlegrow']:play()
+            self.score = self.score + 250
         elseif type == BONUS_TYPE['moreBalls'] then
+            self.score = self.score + 250
             local balls_in_play = tablelength(self.balls)
             -- make sure we only have one ball in the balls array
             if balls_in_play < 3 then
@@ -190,8 +196,11 @@ function PlayState:update(dt)
                     self.balls[k].dy = math.random(-50, -60)
                 end
             end
+            gSounds['moreballs']:play()
         elseif type == BONUS_TYPE['key'] then 
+            self.score = self.score + 2500
             -- do something
+            gSounds['key']:play()
         end
         -- set the item to inactive to remove it at the next frame
         item.active = false
@@ -298,13 +307,13 @@ function PlayState:update(dt)
             end
         end
 
-        -- if ball goes below bounds, revert to serve state and decrease health
+        -- if ball goes below bounds set ball as inactive
         if ball.y >= VIRTUAL_HEIGHT then
             ball.active = false
         end
     end
 
-    -- remove balls that fell out of bounds
+    -- remove balls that are inactive
     for k, ball in pairs(self.balls) do
         if not ball.active then
             table.remove(self.balls, k)
