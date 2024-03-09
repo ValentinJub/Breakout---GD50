@@ -58,7 +58,7 @@ function GenerateQuadsBricks(atlas)
     -- get the first 21st different blocks
     local quads = table.slice(GenerateQuads(atlas, 32, 16), 1, 21)
     -- get the key block
-    quads[#quads+1] = table.slice(GenerateQuads(atlas, 32, 16), 24, 24)
+    quads[#quads+1] = table.slice(GenerateQuads(atlas, 32, 16), 24, 24)[1]
     return quads
 end
 

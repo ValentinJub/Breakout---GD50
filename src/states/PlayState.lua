@@ -16,6 +16,16 @@
 
 PlayState = Class{__includes = BaseState}
 
+local function checkForLockBrick(bricks)
+    local counter = 0
+    for k, brick in pairs(bricks) do
+        if brick.isLock then
+            counter = counter + 1
+        end
+    end
+    return counter
+end
+
 --[[
     We initialize what's in our PlayState via a state table that we pass between
     states as we go from playing to serving.
@@ -27,6 +37,10 @@ function PlayState:enter(params)
     self.score = params.score
     self.highScores = params.highScores
     self.level = params.level
+
+    -- retrieve how many lock bricks wev got 
+    self.lockRemaining = checkForLockBrick(self.bricks)
+    self.keyInPossesion = false
 
     -- array that can contain more than one ball
     self.balls = {params.ball}
@@ -57,6 +71,12 @@ function PlayState:update(dt)
     -- update our timer to keep track of elapsed time
     self.timer = self.timer + dt
 
+    -- increase game default speed by 1% each second
+    if self.timer >= 1 then 
+        increaseSpeed()
+        self.timer = 0
+    end
+
     if self.paused then
         if love.keyboard.wasPressed('space') then
             self.paused = false
@@ -69,7 +89,7 @@ function PlayState:update(dt)
         gSounds['pause']:play()
         return
 
-    -- for testing items
+    -- for testing item spawn
     elseif love.keyboard.wasPressed('e') then
         table.insert(self.items, Bonus(BONUS_TYPE['paddleGrow']))
     elseif love.keyboard.wasPressed('r') then
@@ -95,6 +115,12 @@ function PlayState:update(dt)
                 self.shrinkSpawned = false
             elseif item:getType() == 2 then
                 self.growSpawned = false
+            elseif item:getType() == 3 then
+                self.heartSpawned = false
+            elseif item:getType() == 4 then
+                self.moreBallsItemSpawned = false
+            elseif item:getType() == 5 then
+                self.keySpawned = false
             end
             table.remove(self.items, k)
         end
@@ -112,16 +138,20 @@ function PlayState:update(dt)
         end
     end
 
-    -- spawn grow paddle item when HP = 1 & paddle size is <= medium
-    if self.health < 2 and self.paddle.size < 3 and not self.growSpawned then
-        table.insert(self.items, Bonus(BONUS_TYPE['paddleGrow']))
-        self.growSpawned = true
+    -- spawn grow paddle item when HP <  3 & paddle size is <= medium or when the paddle is shrunk to minimum
+    if (self.health < 3 and self.paddle.size < 3 and not self.growSpawned) or (self.paddle.size == 1) then
+        if not self.growSpawned then
+            table.insert(self.items, Bonus(BONUS_TYPE['paddleGrow']))
+            self.growSpawned = true
+        end
     end
 
-    -- spawn paddle shrink item when the life is 3 & the paddle size is larger than medium
-    if self.health == 3 and self.paddle.size > 2 and not self.shrinkSpawned then
-        table.insert(self.items, Bonus(BONUS_TYPE['paddleShrink']))
-        self.shrinkSpawned = true
+    -- spawn paddle shrink item when the life is 3 & the combo is a multiple of 15
+    if self.health == 3 and self.combo % 15 and not self.shrinkSpawned then
+        if not self.shrinkSpawned then
+            table.insert(self.items, Bonus(BONUS_TYPE['paddleShrink']))
+            self.shrinkSpawned = true
+        end
     end
 
     -- spawn more balls ITEM when the combo is ....
@@ -129,9 +159,16 @@ function PlayState:update(dt)
         if not self.moreBallsItemSpawned then
             table.insert(self.items, Bonus(BONUS_TYPE['moreBalls']))
             self.moreBallsItemSpawned = true
-        end 
-    else 
+        end
+    else
         self.moreBallsItemSpawned = false
+    end
+
+    if self.lockRemaining > 0 then 
+        if not self.keySpawned and not self.keyInPossesion then
+            table.insert(self.items, Bonus(BONUS_TYPE['key']))
+            self.keySpawned = true
+        end
     end
 
     -- update positions based on velocity
@@ -141,6 +178,9 @@ function PlayState:update(dt)
     for k, ball in pairs(self.balls) do
         ball:update(dt)
     end
+
+    -- allows balls to bounce off each other :)
+    handleBallCollisions(self.balls)
 
     -- keep track of the current skin & size should we change paddle size
     local skin = self.paddle.skin
@@ -199,6 +239,7 @@ function PlayState:update(dt)
             gSounds['moreballs']:play()
         elseif type == BONUS_TYPE['key'] then 
             self.score = self.score + 2500
+            self.keyInPossesion = true
             -- do something
             gSounds['key']:play()
         end
@@ -228,6 +269,8 @@ function PlayState:update(dt)
             gSounds['paddle-hit']:play()
         end
 
+
+
         -- detect collision across all bricks with the ball
         for k, brick in pairs(self.bricks) do
 
@@ -241,10 +284,16 @@ function PlayState:update(dt)
                 self.score = self.score + (brick.tier * 200 + brick.color * 25)
 
                 -- trigger the brick's hit function, which removes it from play
-                brick:hit()
+                -- for locked brick, check if the player has the key
+                brick:hit(self.keyInPossesion)
 
                 -- go to our victory screen if there are no more bricks left
                 if self:checkVictory() then
+
+                    -- reset game speed and paddle size
+                    resetSpeed()
+                    self.paddle = Paddle({skin = skin})
+
                     gSounds['victory']:play()
                     
                     gStateMachine:change('victory', {
@@ -296,12 +345,6 @@ function PlayState:update(dt)
                     ball.dy = -ball.dy
                     ball.y = brick.y + 16
                 end
-
-                -- slightly scale the y velocity to speed up the game, capping at +- 150
-                if math.abs(ball.dy) < 150 then
-                    ball.dy = ball.dy * 1.02
-                end
-
                 -- only allow colliding with one brick, for corners
                 break
             end
@@ -327,11 +370,15 @@ function PlayState:update(dt)
             self.combo = 0
 
             if self.health == 0 then
+                resetSpeed()
                 gStateMachine:change('game-over', {
                     score = self.score,
                     highScores = self.highScores
                 })
             else
+                -- reset game speed and paddle size
+                resetSpeed()
+                self.paddle = Paddle({skin = skin})
                 gStateMachine:change('serve', {
                     paddle = self.paddle,
                     bricks = self.bricks,

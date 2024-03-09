@@ -46,7 +46,7 @@ function Paddle:init(params)
 
     -- the variant is which of the four paddle sizes we currently are; 'medium'
     -- is the starting size, as the smallest is too tough to start with
-    self.size = params.size
+    self.size = params.size and params.size or 2
 
     -- starting dimensions
     self.width = setPaddleWidth(self.size)
@@ -61,9 +61,9 @@ end
 function Paddle:update(dt)
     -- keyboard input
     if love.keyboard.isDown('left') then
-        self.dx = -PADDLE_SPEED
+        self.dx = -PADDLE_SPEED * GAME_SPEED
     elseif love.keyboard.isDown('right') then
-        self.dx = PADDLE_SPEED
+        self.dx = PADDLE_SPEED * GAME_SPEED
     else
         self.dx = 0
     end

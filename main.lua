@@ -99,7 +99,7 @@ function love.load()
         ['paddleshrink'] = love.audio.newSource('sounds/paddleshrink.wav', 'static'),
         ['moreballs'] = love.audio.newSource('sounds/moreballs.wav', 'static'),
         ['key'] = love.audio.newSource('sounds/key.wav', 'static'),
-
+        ['ballmeetball'] = love.audio.newSource('sounds/ballmeetball.wav', 'static'),
         ['music'] = love.audio.newSource('sounds/music.wav', 'static')
     }
 
@@ -316,3 +316,9 @@ function tablelength(T)
     for _ in pairs(T) do count = count + 1 end
     return count
 end
+
+-- keep track of the game speed, increase it as time passes
+GAME_SPEED = 1
+
+function increaseSpeed() GAME_SPEED = GAME_SPEED + 0.01 end
+function resetSpeed() GAME_SPEED = 1 end

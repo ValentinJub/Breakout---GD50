@@ -34,7 +34,7 @@ function Bonus:init(type)
     -- random x coordinate
     self.x = math.random(16, VIRTUAL_WIDTH - 16)
     -- define y to spawn the bonus over the screen
-    self.y = -16
+    self.y = math.random(-48,-16)
     self.dy = 15
 
     -- when self.active is false the bonus should be removed
@@ -52,7 +52,7 @@ function Bonus:update(dt)
 
     -- every frame increase y position until it exits the screen
     if self.y < VIRTUAL_HEIGHT then
-        self.y = self.y + self.dy * dt
+        self.y = self.y + (self.dy * GAME_SPEED) * dt
     else 
         self.active = false
     end

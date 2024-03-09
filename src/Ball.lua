@@ -36,6 +36,7 @@ end
     and returns true if the bounding boxes of this and the argument overlap.
 ]]
 function Ball:collides(target, type)
+    -- adjusts collision with the paddle so that the ball only bounces if it hits above the middle of the paddle y axis
     if type == 'paddle' and target.y + target.height / 2 < self.y + self.height / 2 then
         return false
     end
@@ -66,8 +67,8 @@ function Ball:reset()
 end
 
 function Ball:update(dt)
-    self.x = self.x + self.dx * dt
-    self.y = self.y + self.dy * dt
+    self.x = self.x + (self.dx * dt) * GAME_SPEED
+    self.y = self.y + (self.dy * dt) * GAME_SPEED
 
     -- allow ball to bounce off walls
     if self.x <= 0 then

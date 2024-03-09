@@ -18,6 +18,8 @@ require 'src/constants'
 -- bonus class
 require 'src/Bonus'
 
+require 'src/collisions'
+
 -- the ball that travels around, breaking bricks and triggering lives lost
 require 'src/Ball'
 
